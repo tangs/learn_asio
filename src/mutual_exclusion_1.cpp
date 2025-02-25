@@ -101,10 +101,6 @@ private:
               co_await write_lock_.async_send(deferred);
 
               if (trim_std_string(data) == "quit") {
-//                  std::cout << "quit1" << std::endl;
-//                  std::string* a = nullptr;
-//                  auto b = a->substr(0, 3);
-//                  std::cout << "quit2:" << b << std::endl;
                   stop();
                   break;
               }
