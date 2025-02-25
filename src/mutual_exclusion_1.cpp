@@ -51,99 +51,98 @@ static std::string_view trim_std_string(std::string_view str) {
 // send_heartbeats(), each written as a coroutine.
 class line_based_echo_session :
         public std::enable_shared_from_this<line_based_echo_session> {
-  // The socket used to read from and write to the client. This socket is a
-  // data member as it is shared between the two actors.
-  tcp::socket socket_;
+    // The socket used to read from and write to the client. This socket is a
+    // data member as it is shared between the two actors.
+    tcp::socket socket_;
 
-  // As both of the actors will write to the socket, we need a lock to prevent
-  // these write from overlapping. To achieve this, we use a channel with a
-  // buffer size of one. The lock is claimed by sending a message to the
-  // channel, and then released by receiving this message back again. If the
-  // lock is not held then the channel's buffer is empty, and send will
-  // complete without delay. Otherwise, if the lock is held by the other actor,
-  // then the send operation will not complete until the lock is released.
-  channel<void()> write_lock_{socket_.get_executor(), 1};
+    // As both of the actors will write to the socket, we need a lock to prevent
+    // these write from overlapping. To achieve this, we use a channel with a
+    // buffer size of one. The lock is claimed by sending a message to the
+    // channel, and then released by receiving this message back again. If the
+    // lock is not held then the channel's buffer is empty, and send will
+    // complete without delay. Otherwise, if the lock is held by the other actor,
+    // then the send operation will not complete until the lock is released.
+    channel<void()> write_lock_{socket_.get_executor(), 1};
 
 public:
-  explicit line_based_echo_session(tcp::socket socket)
-          : socket_{std::move(socket)} {
-      socket_.set_option(tcp::no_delay(true));
-  }
+    explicit line_based_echo_session(tcp::socket socket)
+            : socket_{std::move(socket)} {
+        socket_.set_option(tcp::no_delay(true));
+    }
 
-  void start() {
-      co_spawn(socket_.get_executor(),
-               [self = shared_from_this()]{ return self->handle_messages(); },
-               detached);
+    void start() {
+        co_spawn(socket_.get_executor(),
+                 [self = shared_from_this()]{ return self->handle_messages(); },
+                 detached);
 
-      co_spawn(socket_.get_executor(),
-               [self = shared_from_this()]{ return self->send_heartbeats(); },
-               detached);
-  }
+        co_spawn(socket_.get_executor(),
+                 [self = shared_from_this()]{ return self->send_heartbeats(); },
+                 detached);
+    }
 
 private:
-  void stop() {
-      socket_.close();
-      write_lock_.cancel();
-  }
+    void stop() {
+        socket_.close();
+        write_lock_.cancel();
+    }
 
-  awaitable<void> handle_messages() {
-      try  {
-          std::string data;
-          for (;;) {
-              constexpr std::size_t max_line_length = 1024;
-              // Read an entire line from the client.
-              const std::size_t length = co_await async_read_until(socket_,
-                                                             dynamic_buffer(data, max_line_length), '\n', deferred);
+    awaitable<void> handle_messages() {
+        try  {
+            std::string data;
+            for (;;) {
+                constexpr std::size_t max_line_length = 1024;
+                // Read an entire line from the client.
+                const std::size_t length = co_await async_read_until(socket_,
+                                                               dynamic_buffer(data, max_line_length), '\n', deferred);
 
-              // Claim the write lock by sending a message to the channel. Since the
-              // channel signature is void(), there are no arguments to send in the
-              // message itself.
-              co_await write_lock_.async_send(deferred);
+                // Claim the write lock by sending a message to the channel. Since the
+                // channel signature is void(), there are no arguments to send in the
+                // message itself.
+                co_await write_lock_.async_send(deferred);
 
-              if (trim_std_string(data) == "quit") {
-                  stop();
-                  break;
-              }
-              // Respond to the client with a message, echoing the line they sent.
-              co_await async_write(socket_, "<line>"_buf, deferred);
-              co_await async_write(socket_, dynamic_buffer(data, length), deferred);
+                if (trim_std_string(data) == "quit") {
+                    stop();
+                    break;
+                }
+                // Respond to the client with a message, echoing the line they sent.
+                co_await async_write(socket_, "<line>"_buf, deferred);
+                co_await async_write(socket_, dynamic_buffer(data, length), deferred);
 
-              // Release the lock by receiving the message back again.
-              write_lock_.try_receive([](auto...){});
-          }
-      } catch (const std::exception&) {
-          stop();
-      }
-  }
+                // Release the lock by receiving the message back again.
+                write_lock_.try_receive([](auto...){});
+            }
+        } catch (const std::exception&) {
+            stop();
+        }
+    }
 
-  awaitable<void> send_heartbeats() {
-      steady_timer timer{socket_.get_executor()};
-      try {
-          for (;;) {
-              // Wait one second before trying to send the next heartbeat.
-              timer.expires_after(1s);
-              co_await timer.async_wait(deferred);
+    awaitable<void> send_heartbeats() {
+        steady_timer timer{socket_.get_executor()};
+        try {
+            for (;;) {
+                // Wait one second before trying to send the next heartbeat.
+                timer.expires_after(1s);
+                co_await timer.async_wait(deferred);
 
-              // Claim the write lock by sending a message to the channel. Since the
-              // channel signature is void(), there are no arguments to send in the
-              // message itself.
-              co_await write_lock_.async_send(deferred);
+                // Claim the write lock by sending a message to the channel. Since the
+                // channel signature is void(), there are no arguments to send in the
+                // message itself.
+                co_await write_lock_.async_send(deferred);
 
-              // Send a heartbeat to the client. As the content of the heartbeat
-              // message never varies, a buffer literal can be used to specify the
-              // bytes of the message. The memory associated with a buffer literal is
-              // valid for the lifetime of the program, which mean that the buffer
-              // can be safely passed as-is to the asynchronous operation.
-              co_await async_write(socket_, "<heartbeat>\n"_buf, deferred);
+                // Send a heartbeat to the client. As the content of the heartbeat
+                // message never varies, a buffer literal can be used to specify the
+                // bytes of the message. The memory associated with a buffer literal is
+                // valid for the lifetime of the program, which mean that the buffer
+                // can be safely passed as-is to the asynchronous operation.
+                co_await async_write(socket_, "<heartbeat>\n"_buf, deferred);
 
-              // Release the lock by receiving the message back again.
-              write_lock_.try_receive([](auto...){});
-          }
-      } catch (const std::exception&) {
-          stop();
-      }
-  }
-
+                // Release the lock by receiving the message back again.
+                write_lock_.try_receive([](auto...){});
+            }
+        } catch (const std::exception&) {
+            stop();
+        }
+    }
 };
 
 awaitable<void> listen(tcp::acceptor& acceptor) {
