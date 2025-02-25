@@ -33,9 +33,9 @@ using namespace std::literals::chrono_literals;
 
 static std::string_view trim_std_string(std::string_view str) {
     const auto left = std::find_if_not(str.begin(), str.end(),
-                                 [](const unsigned char ch) { return std::isspace(ch); });
+                                      [](const unsigned char ch) { return std::isspace(ch); });
     const auto right = std::find_if_not(str.rbegin(), str.rend(),
-                                  [](const unsigned char ch) { return std::isspace(ch); }).base();
+                                       [](const unsigned char ch) { return std::isspace(ch); }).base();
     
     return str.substr(left - str.begin(), right - left);
 }
