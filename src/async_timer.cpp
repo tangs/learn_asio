@@ -1,10 +1,9 @@
 #include <iostream>
 #include <asio.hpp>
-#include <chrono>
 #include <iomanip>
 #include <sstream>
 
-std::string get_current_time() {
+static std::string get_current_time() {
     const auto now = std::chrono::system_clock::now();
     const auto now_c = std::chrono::system_clock::to_time_t(now);
     const auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -16,7 +15,7 @@ std::string get_current_time() {
     return ss.str();
 }
 
-void print(const std::error_code& e) {
+static void print(const std::error_code& e) {
     if (e) {
         std::cout << "[" << get_current_time() << "] "
                   << "Timer 1 was cancelled. Error: " << e.message() << std::endl;

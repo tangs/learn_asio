@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <sstream>
 
-std::string get_current_time() {
+static std::string get_current_time() {
     const auto now = std::chrono::system_clock::now();
     const auto now_c = std::chrono::system_clock::to_time_t(now);
     const auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -15,7 +15,7 @@ std::string get_current_time() {
     return ss.str();
 }
 
-void wait_and_print(asio::steady_timer& timer, const std::string& timer_name) {
+static void wait_and_print(asio::steady_timer& timer, const std::string& timer_name) {
     try {
         timer.wait();  // 同步等待
         std::cout << "[" << get_current_time() << "] "
