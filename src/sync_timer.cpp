@@ -1,6 +1,6 @@
 #include <iostream>
 #include <asio.hpp>
-#include "utils/time_utils.hpp"
+#include "utils/time_utils.h"
 
 static void wait_and_print(asio::steady_timer& timer, const std::string& timer_name) {
     try {

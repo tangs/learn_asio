@@ -16,6 +16,12 @@ add_executable(lobby_server main.cpp)
 target_include_directories(lobby_server PRIVATE ${asio_SOURCE_DIR}/asio/include)
 target_compile_definitions(lobby_server PRIVATE ASIO_STANDALONE)
 
+# 创建工具库
+add_library(utils
+    src/utils/time_utils.cpp
+)
+target_include_directories(utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
+
 # Timer examples
 add_executable(async_timer src/async_timer.cpp)
 target_include_directories(async_timer PRIVATE 
@@ -23,6 +29,7 @@ target_include_directories(async_timer PRIVATE
     ${CMAKE_SOURCE_DIR}/include
 )
 target_compile_definitions(async_timer PRIVATE ASIO_STANDALONE)
+target_link_libraries(async_timer PRIVATE utils)
 
 add_executable(sync_timer src/sync_timer.cpp)
 target_include_directories(sync_timer PRIVATE 
@@ -30,6 +37,7 @@ target_include_directories(sync_timer PRIVATE
     ${CMAKE_SOURCE_DIR}/include
 )
 target_compile_definitions(sync_timer PRIVATE ASIO_STANDALONE)
+target_link_libraries(sync_timer PRIVATE utils)
 
 # Mutual exclusion example
 add_executable(mutual_exclusion_1 src/mutual_exclusion_1.cpp)

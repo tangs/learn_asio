@@ -1,13 +1,11 @@
-#pragma once
-
+#include "utils/time_utils.h"
 #include <chrono>
 #include <iomanip>
 #include <sstream>
-#include <string>
 
 namespace utils {
 
-static std::string get_current_time() {
+std::string get_current_time() {
     const auto now = std::chrono::system_clock::now();
     const auto now_c = std::chrono::system_clock::to_time_t(now);
     const auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
