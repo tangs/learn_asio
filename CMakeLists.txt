@@ -18,11 +18,17 @@ target_compile_definitions(lobby_server PRIVATE ASIO_STANDALONE)
 
 # Timer examples
 add_executable(async_timer src/async_timer.cpp)
-target_include_directories(async_timer PRIVATE ${asio_SOURCE_DIR}/asio/include)
+target_include_directories(async_timer PRIVATE 
+    ${asio_SOURCE_DIR}/asio/include
+    ${CMAKE_SOURCE_DIR}/include
+)
 target_compile_definitions(async_timer PRIVATE ASIO_STANDALONE)
 
 add_executable(sync_timer src/sync_timer.cpp)
-target_include_directories(sync_timer PRIVATE ${asio_SOURCE_DIR}/asio/include)
+target_include_directories(sync_timer PRIVATE 
+    ${asio_SOURCE_DIR}/asio/include
+    ${CMAKE_SOURCE_DIR}/include
+)
 target_compile_definitions(sync_timer PRIVATE ASIO_STANDALONE)
 
 # Mutual exclusion example
