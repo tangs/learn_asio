@@ -33,12 +33,12 @@ void print1(const std::error_code& e) {
 
 int main() {
     asio::io_context io;
-    asio::steady_timer t1(io, asio::chrono::seconds(5));
+    asio::steady_timer t1(io, asio::chrono::seconds(1));
     asio::steady_timer t2(io, asio::chrono::seconds(3));
     asio::steady_timer t3(io, asio::chrono::seconds(2));
 
     std::cout << "[" << get_current_time() << "] "
-                      << "start..." << std::endl;
+                      << "****************start****************" << std::endl;
 
     t1.async_wait(&print);
     t2.async_wait(&print1);
@@ -49,5 +49,7 @@ int main() {
     });
 
     io.run();
+    std::cout << "[" << get_current_time() << "] "
+                      << "****************end****************" << std::endl;
     return 0;
 }
