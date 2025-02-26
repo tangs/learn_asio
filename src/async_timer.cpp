@@ -20,10 +20,10 @@ void print(const std::error_code& e) {
     if (e) {
         std::cout << "[" << get_current_time() << "] "
                   << "Timer 1 was cancelled. Error: " << e.message() << std::endl;
-    } else {
-        std::cout << "[" << get_current_time() << "] "
-                  << "Timer 1 completed normally!" << std::endl;
+        return;
     }
+    std::cout << "[" << get_current_time() << "] "
+              << "Timer 1 completed normally!" << std::endl;
 }
 
 void print1(const std::error_code& e) {
