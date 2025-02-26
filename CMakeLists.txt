@@ -17,6 +17,7 @@ target_include_directories(lobby_server PRIVATE ${asio_SOURCE_DIR}/asio/include)
 
 add_executable(async_timer src/async_timer.cpp)
 target_include_directories(async_timer PRIVATE ${asio_SOURCE_DIR}/asio/include)
+target_compile_definitions(async_timer PRIVATE ASIO_STANDALONE)
 
 add_executable(mutual_exclusion_1 src/mutual_exclusion_1.cpp)
 target_include_directories(mutual_exclusion_1 PRIVATE ${asio_SOURCE_DIR}/asio/include)
@@ -32,3 +33,4 @@ add_subdirectory(tests)
 # 添加 sync_timer 可执行程序
 add_executable(sync_timer src/sync_timer.cpp)
 target_include_directories(sync_timer PRIVATE ${asio_SOURCE_DIR}/asio/include)
+target_compile_definitions(sync_timer PRIVATE ASIO_STANDALONE)
