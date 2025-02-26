@@ -28,3 +28,7 @@ target_link_libraries(mutual_exclusion_1 PRIVATE Threads::Threads)
 
 # 添加测试目录
 add_subdirectory(tests)
+
+# 添加 sync_timer 可执行程序
+add_executable(sync_timer src/sync_timer.cpp)
+target_include_directories(sync_timer PRIVATE ${asio_SOURCE_DIR}/asio/include)
