@@ -2,7 +2,6 @@
 #include <gmock/gmock.h>
 #include <asio.hpp>
 #include <thread>
-#include <future>
 #include <string>
 
 // 这里我们需要包含被测试的代码
