@@ -5,9 +5,9 @@
 #include <sstream>
 
 std::string get_current_time() {
-    auto now = std::chrono::system_clock::now();
-    auto now_c = std::chrono::system_clock::to_time_t(now);
-    auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+    const auto now = std::chrono::system_clock::now();
+    const auto now_c = std::chrono::system_clock::to_time_t(now);
+    const auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
         now.time_since_epoch()) % 1000;
     
     std::stringstream ss;
