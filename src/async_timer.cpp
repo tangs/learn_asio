@@ -37,6 +37,9 @@ int main() {
     asio::steady_timer t2(io, asio::chrono::seconds(3));
     asio::steady_timer t3(io, asio::chrono::seconds(2));
 
+    std::cout << "[" << get_current_time() << "] "
+                      << "start..." << std::endl;
+
     t1.async_wait(&print);
     t2.async_wait(&print1);
     t3.async_wait([&t1] (const std::error_code& e) {
