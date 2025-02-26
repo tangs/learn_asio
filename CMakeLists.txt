@@ -15,6 +15,9 @@ FetchContent_MakeAvailable(asio)
 add_executable(lobby_server main.cpp)
 target_include_directories(lobby_server PRIVATE ${asio_SOURCE_DIR}/asio/include)
 
+add_executable(async_timer src/async_timer.cpp)
+target_include_directories(async_timer PRIVATE ${asio_SOURCE_DIR}/asio/include)
+
 add_executable(mutual_exclusion_1 src/mutual_exclusion_1.cpp)
 target_include_directories(mutual_exclusion_1 PRIVATE ${asio_SOURCE_DIR}/asio/include)
 
