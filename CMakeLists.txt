@@ -23,13 +23,13 @@ add_library(utils
 target_include_directories(utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 # Timer examples
-add_executable(async_timer src/async_timer.cpp)
-target_include_directories(async_timer PRIVATE 
+add_executable(time2 src/time2.cpp)
+target_include_directories(time2 PRIVATE 
     ${asio_SOURCE_DIR}/asio/include
     ${CMAKE_SOURCE_DIR}/include
 )
-target_compile_definitions(async_timer PRIVATE ASIO_STANDALONE)
-target_link_libraries(async_timer PRIVATE utils)
+target_compile_definitions(time2 PRIVATE ASIO_STANDALONE)
+target_link_libraries(time2 PRIVATE utils)
 
 add_executable(time1 src/time1.cpp)
 target_include_directories(time1 PRIVATE 
