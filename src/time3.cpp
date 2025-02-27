@@ -11,8 +11,9 @@ static void print(const std::error_code& /*e*/,
           ++(*count);
 
           t->expires_at(t->expiry() + asio::chrono::seconds(1));
-          t->async_wait(std::bind(print,
-                asio::placeholders::error, t, count));
+          t->async_wait([t, count](const std::error_code& error) {
+              print(error, t, count);
+          });
       }
 }
 
@@ -21,7 +22,9 @@ int main() {
 
     int count = 0;
     asio::steady_timer t(io, asio::chrono::seconds(1));
-    t.async_wait(std::bind(print, asio::placeholders::error, &t, &count));
+    t.async_wait([&t, &count](const std::error_code& error) {
+        print(error, &t, &count);
+    });
 
     io.run();
 
