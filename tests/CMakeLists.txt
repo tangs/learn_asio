@@ -23,21 +23,16 @@ enable_testing()
 
 # 添加测试可执行文件
 add_executable(mutual_exclusion_test mutual_exclusion_test.cpp)
-target_include_directories(mutual_exclusion_test PRIVATE ${asio_SOURCE_DIR}/asio/include)
 
-# 链接 Google Test 和其他必要的库
+# 使用父项目的通用函数设置属性
+set_common_target_properties(mutual_exclusion_test)
+
+# 链接 Google Test
 target_link_libraries(mutual_exclusion_test
   PRIVATE
   gtest_main
   gmock_main
-  pthread
 )
-
-# 添加 Asio 库
-find_package(Threads REQUIRED)
-# target_include_directories(mutual_exclusion_test PRIVATE ${CMAKE_SOURCE_DIR}/../)
-target_compile_definitions(mutual_exclusion_test PRIVATE ASIO_STANDALONE)
-target_link_libraries(mutual_exclusion_test PRIVATE Threads::Threads)
 
 # 添加测试
 include(GoogleTest)
