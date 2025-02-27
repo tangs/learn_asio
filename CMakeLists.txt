@@ -31,13 +31,13 @@ target_include_directories(async_timer PRIVATE
 target_compile_definitions(async_timer PRIVATE ASIO_STANDALONE)
 target_link_libraries(async_timer PRIVATE utils)
 
-add_executable(sync_timer src/sync_timer.cpp)
-target_include_directories(sync_timer PRIVATE 
+add_executable(time1 src/time1.cpp)
+target_include_directories(time1 PRIVATE 
     ${asio_SOURCE_DIR}/asio/include
     ${CMAKE_SOURCE_DIR}/include
 )
-target_compile_definitions(sync_timer PRIVATE ASIO_STANDALONE)
-target_link_libraries(sync_timer PRIVATE utils)
+target_compile_definitions(time1 PRIVATE ASIO_STANDALONE)
+target_link_libraries(time1 PRIVATE utils)
 
 # Mutual exclusion example
 add_executable(mutual_exclusion_1 src/mutual_exclusion_1.cpp)
