@@ -23,6 +23,14 @@ add_library(utils
 target_include_directories(utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 # Timer examples
+add_executable(time1 src/time1.cpp)
+target_include_directories(time1 PRIVATE 
+    ${asio_SOURCE_DIR}/asio/include
+    ${CMAKE_SOURCE_DIR}/include
+)
+target_compile_definitions(time1 PRIVATE ASIO_STANDALONE)
+target_link_libraries(time1 PRIVATE utils)
+
 add_executable(time2 src/time2.cpp)
 target_include_directories(time2 PRIVATE 
     ${asio_SOURCE_DIR}/asio/include
@@ -31,13 +39,13 @@ target_include_directories(time2 PRIVATE
 target_compile_definitions(time2 PRIVATE ASIO_STANDALONE)
 target_link_libraries(time2 PRIVATE utils)
 
-add_executable(time1 src/time1.cpp)
-target_include_directories(time1 PRIVATE 
+add_executable(time3 src/time3.cpp)
+target_include_directories(time3 PRIVATE 
     ${asio_SOURCE_DIR}/asio/include
     ${CMAKE_SOURCE_DIR}/include
 )
-target_compile_definitions(time1 PRIVATE ASIO_STANDALONE)
-target_link_libraries(time1 PRIVATE utils)
+target_compile_definitions(time3 PRIVATE ASIO_STANDALONE)
+target_link_libraries(time3 PRIVATE utils)
 
 # Mutual exclusion example
 add_executable(mutual_exclusion_1 src/mutual_exclusion_1.cpp)
