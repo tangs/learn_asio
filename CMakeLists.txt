@@ -66,6 +66,10 @@ add_executable(timer4 src/timer4.cpp)
 set_common_target_properties(timer4)
 target_link_libraries(timer4 PRIVATE utils)
 
+add_executable(timer5 src/timer5.cpp)
+set_common_target_properties(timer5)
+target_link_libraries(timer5 PRIVATE utils)
+
 # Mutual exclusion example
 add_executable(mutual_exclusion_1 src/mutual_exclusion_1.cpp)
 set_common_target_properties(mutual_exclusion_1)
