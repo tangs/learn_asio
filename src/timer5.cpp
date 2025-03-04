@@ -2,7 +2,6 @@
 #include <iostream>
 #include <asio.hpp>
 
-
 #include "utils/time_utils.h"
 
 class printer {
