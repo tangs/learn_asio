@@ -13,13 +13,26 @@ if(WIN32)
     )
 endif()
 
+# 添加 Protocol Buffers
 include(FetchContent)
 FetchContent_Declare(
-        asio
-        GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
-        GIT_TAG asio-1-32-0  # 指定版本号
+    protobuf
+    GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
+    GIT_TAG v3.21.12  # 选择一个稳定版本
+)
+set(protobuf_BUILD_TESTS OFF CACHE BOOL "Build tests")
+FetchContent_MakeAvailable(protobuf)
+
+# 添加 ASIO
+FetchContent_Declare(
+    asio
+    GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
+    GIT_TAG asio-1-32-0
 )
 FetchContent_MakeAvailable(asio)
+
+# 查找 Protobuf 包
+find_package(Protobuf REQUIRED)
 
 # 创建工具库
 add_library(utils
@@ -32,6 +45,7 @@ function(set_common_target_properties target_name)
     target_include_directories(${target_name} PRIVATE 
         ${asio_SOURCE_DIR}/asio/include
         ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_BINARY_DIR}  # 为生成的 protobuf 文件添加包含路径
     )
     target_compile_definitions(${target_name} PRIVATE ASIO_STANDALONE)
     
@@ -42,7 +56,32 @@ function(set_common_target_properties target_name)
     
     # 所有平台都需要线程库
     find_package(Threads REQUIRED)
-    target_link_libraries(${target_name} PRIVATE Threads::Threads)
+    target_link_libraries(${target_name} PRIVATE 
+        Threads::Threads
+        protobuf::libprotobuf  # 添加 protobuf 库
+    )
+endfunction()
+
+# 创建 proto 文件目录
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+
+# 编译 proto 文件的函数
+function(compile_proto proto_file)
+    get_filename_component(proto_file_abs ${proto_file} ABSOLUTE)
+    get_filename_component(proto_file_name ${proto_file} NAME_WE)
+    
+    add_custom_command(
+        OUTPUT
+            "${CMAKE_BINARY_DIR}/generated/${proto_file_name}.pb.cc"
+            "${CMAKE_BINARY_DIR}/generated/${proto_file_name}.pb.h"
+        COMMAND protobuf::protoc
+        ARGS
+            --cpp_out=${CMAKE_BINARY_DIR}/generated
+            -I${CMAKE_SOURCE_DIR}/protos
+            ${proto_file_abs}
+        DEPENDS ${proto_file_abs}
+        COMMENT "Generating protobuf files for ${proto_file}"
+    )
 endfunction()
 
 # 主程序
