@@ -78,13 +78,17 @@ add_executable(daytime1 src/daytime1.cpp)
 set_common_target_properties(daytime1)
 target_link_libraries(daytime1 PRIVATE utils)
 
+add_executable(daytime_server src/daytime_server.cpp)
+set_common_target_properties(daytime_server)
+target_link_libraries(daytime_server PRIVATE utils)
+
+add_executable(async_daytime_server src/async_daytime_server.cpp)
+set_common_target_properties(async_daytime_server)
+target_link_libraries(async_daytime_server PRIVATE utils)
+
 # Mutual exclusion example
 add_executable(mutual_exclusion_1 src/mutual_exclusion_1.cpp)
 set_common_target_properties(mutual_exclusion_1)
 
 # 添加测试目录
 add_subdirectory(tests)
-
-add_executable(daytime_server src/daytime_server.cpp)
-set_common_target_properties(daytime_server)
-target_link_libraries(daytime_server PRIVATE utils)
