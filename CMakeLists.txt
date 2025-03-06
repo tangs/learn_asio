@@ -20,7 +20,10 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
     GIT_TAG v3.21.12  # 选择一个稳定版本
 )
+# 配置 protobuf 构建选项
 set(protobuf_BUILD_TESTS OFF CACHE BOOL "Build tests")
+set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+set(protobuf_MSVC_STATIC_RUNTIME OFF CACHE BOOL "Link static runtime libraries")
 FetchContent_MakeAvailable(protobuf)
 
 # 添加 ASIO
@@ -31,8 +34,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(asio)
 
-# 查找 Protobuf 包
-find_package(Protobuf REQUIRED)
+# 查找 Protobuf 包 - 移到 FetchContent_MakeAvailable 之后
+find_package(Protobuf REQUIRED CONFIG)
 
 # 创建工具库
 add_library(utils
