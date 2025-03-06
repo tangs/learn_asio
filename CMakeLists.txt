@@ -20,10 +20,15 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
     GIT_TAG v3.21.12  # 选择一个稳定版本
 )
+
 # 配置 protobuf 构建选项
 set(protobuf_BUILD_TESTS OFF CACHE BOOL "Build tests")
 set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 set(protobuf_MSVC_STATIC_RUNTIME OFF CACHE BOOL "Link static runtime libraries")
+set(protobuf_INSTALL OFF CACHE BOOL "Install protobuf binaries and files")
+set(protobuf_BUILD_EXAMPLES OFF CACHE BOOL "Build examples")
+
+# 使 protobuf 可用
 FetchContent_MakeAvailable(protobuf)
 
 # 添加 ASIO
@@ -33,9 +38,6 @@ FetchContent_Declare(
     GIT_TAG asio-1-32-0
 )
 FetchContent_MakeAvailable(asio)
-
-# 查找 Protobuf 包 - 移到 FetchContent_MakeAvailable 之后
-find_package(Protobuf REQUIRED CONFIG)
 
 # 创建工具库
 add_library(utils
@@ -48,7 +50,7 @@ function(set_common_target_properties target_name)
     target_include_directories(${target_name} PRIVATE 
         ${asio_SOURCE_DIR}/asio/include
         ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_BINARY_DIR}  # 为生成的 protobuf 文件添加包含路径
+        ${CMAKE_BINARY_DIR}/generated  # 为生成的 protobuf 文件添加包含路径
     )
     target_compile_definitions(${target_name} PRIVATE ASIO_STANDALONE)
     
@@ -61,7 +63,7 @@ function(set_common_target_properties target_name)
     find_package(Threads REQUIRED)
     target_link_libraries(${target_name} PRIVATE 
         Threads::Threads
-        protobuf::libprotobuf  # 添加 protobuf 库
+        protobuf::libprotobuf  # 直接使用 protobuf 目标
     )
 endfunction()
 
